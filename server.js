@@ -141,6 +141,19 @@ app.post('/api/concubine/update', async (req, res) => {
     res.json(updated);
 });
 
+// NEW ENDPOINT: Handles character deletion
+app.post('/api/concubine/delete', async (req, res) => {
+    const password = req.headers['x-password'];
+    if (!VALID_PASSWORDS.includes(password)) return res.status(401).json({ error: 'Unauthorized' });
+
+    const state = await getState(password);
+    const { id } = req.body;
+
+    state.concubines = state.concubines.filter(c => c.id !== id);
+    const updated = await updateState(password, { concubines: state.concubines });
+    res.json(updated);
+});
+
 // ---- Start ----
 async function start() {
     const client = new MongoClient(MONGO_URI);

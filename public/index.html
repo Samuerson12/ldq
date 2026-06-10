@@ -40,10 +40,6 @@
         select, input[type="text"] { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
         .notes-textarea { width: 100%; min-width: 150px; min-height: 34px; max-height: 200px; padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; font-family: inherit; resize: vertical; box-sizing: border-box; overflow-y: hidden; }
         .notes-textarea:focus { border-color: #3498db; outline: none; }
-        .deceased-section { margin-top: 40px; }
-        .deceased-section h2 { color: #7f8c8d; font-size: 18px; margin-bottom: 10px; }
-        .deceased-table th { background: #7f8c8d; }
-        .deceased-table tbody tr { opacity: 0.75; }
     </style>
 </head>
 <body>
@@ -63,9 +59,12 @@
         <div id="promotion-alert" class="promotion-alert-box"></div>
 
         <div class="notice">
-            <strong>系统状态：</strong><br>
-            1. 自动晋升功能已停用。所有位份变更、赐予封号操作现完全由手动控制调节。<br>
-            2. 新增实时数据同步备注栏，可随内容多寡自动延展输入框高度。
+            <strong>注意（晋升规则）：</strong><br>
+            1. 侍寝每满 20 次晋升一级。<br>
+            2. 嫔及以上入宫时间每满 5 年进一次位份；贵人及以下每满入宫时间 7 年晋一个位份。<br>
+            3. 贵人及以下怀孕升一个位份，如果生下来是皇子（男的）再升一个位份以及赏赐一个封号。<br>
+            4. 嫔位及以上的怀孕不升位份，生下来只有是皇子可以升一个位份及封号。<br>
+            5. 皇后、皇贵妃各限 1 人，贵妃限 2 人，妃限 4 人；满员时晋升停在下一可用位份。
         </div>
 
         <div class="header-section">
@@ -84,29 +83,11 @@
                     <th>入宫时长</th>
                     <th>侍寝次数</th>
                     <th>备注</th>
-                    <th>操作 / 状态 / 封号</th>
+                    <th>操作</th>
                 </tr>
             </thead>
             <tbody id="concubine-table-body"></tbody>
         </table>
-
-        <div class="deceased-section">
-            <h2>⚰️ 已故妃子</h2>
-            <table class="deceased-table">
-                <thead>
-                    <tr>
-                        <th>名字</th>
-                        <th>位份</th>
-                        <th>入宫时间</th>
-                        <th>入宫时长</th>
-                        <th>侍寝次数</th>
-                        <th>备注</th>
-                        <th>操作</th>
-                    </tr>
-                </thead>
-                <tbody id="deceased-table-body"></tbody>
-            </table>
-        </div>
     </div>
 
     <script>
@@ -177,8 +158,6 @@
             currentYear = data.currentYear;
             currentMonth = data.currentMonth;
             document.getElementById('time-display').innerText = `${currentYear}年${currentMonth}月`;
-            
-            // 停用自动时长晋升检测，仅更新数据视图
             renderTable(data.concubines);
         }
 
@@ -199,7 +178,6 @@
             const newCount = Math.max(0, currentCount + delta);
             const fields = { lianShiCount: newCount };
 
-            // 移除侍寝满20次触发自动变到位份的旧逻辑，只保存数字变化
             const res = await fetch('/api/concubine/update', {
                 method: 'POST',
                 headers: apiHeaders(),
@@ -211,7 +189,6 @@
 
         async function handlePregnancy(id, currentTitle, concubines) {
             const fields = { isPregnant: true };
-            // 移除原本低位份怀孕自动跳级逻辑
             const res = await fetch('/api/concubine/update', {
                 method: 'POST',
                 headers: apiHeaders(),
@@ -232,36 +209,24 @@
         }
 
         async function handleSon(id, currentTitle, currentCustomTitle, concubines) {
-            let newCustomTitle = currentCustomTitle || "";
-            const promptMsg = newCustomTitle === ""
-                ? `【恭喜诞下皇子！】\n请输入赐予的封号：`
-                : `【恭喜诞下皇子！】\n现有封号：${newCustomTitle}\n请输入追加的封号字：`;
-
-            const input = prompt(promptMsg);
-            if (input !== null && input.trim() !== "") {
-                newCustomTitle = newCustomTitle + input.trim();
-            }
-
-            // 仅记录生子状态、并支持增加自定义封号字，不擅自修改主位份 title
             const res = await fetch('/api/concubine/update', {
                 method: 'POST',
                 headers: apiHeaders(),
                 body: JSON.stringify({
                     id, hasSon: true, isPregnant: false,
-                    pregnancyPromoted: false, sonPromoted: true,
-                    customTitle: newCustomTitle
+                    pregnancyPromoted: false, sonPromoted: true
                 })
             });
             const data = await res.json();
             renderTable(data.concubines);
         }
 
-        async function handleDeceased(id, makeDeceased) {
-            if (!confirm(makeDeceased ? "确认将此妃子标记为已故？" : "确认将此妃子从已故名单移除并恢复？")) return;
-            const res = await fetch('/api/concubine/update', {
+        async function handleDelete(id) {
+            if (!confirm("确认删除此妃子？该操作不可逆！")) return;
+            const res = await fetch('/api/concubine/delete', {
                 method: 'POST',
                 headers: apiHeaders(),
-                body: JSON.stringify({ id, deceased: makeDeceased })
+                body: JSON.stringify({ id })
             });
             const data = await res.json();
             renderTable(data.concubines);
@@ -271,38 +236,11 @@
             latestConcubines = concubines;
             const fullTitles = getFullTitles(concubines);
             const tbody = document.getElementById('concubine-table-body');
-            const deceasedTbody = document.getElementById('deceased-table-body');
             tbody.innerHTML = '';
-            deceasedTbody.innerHTML = '';
 
             concubines.forEach(c => {
                 const duration = calculateDuration(c.enterYear, c.enterMonth);
                 const safeNotes = c.notes || "";
-
-                if (c.deceased) {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>
-                            <strong style="font-size:16px;color:#7f8c8d;">${c.name}</strong>
-                            ${c.customTitle ? `<br><span style="color:#e67e22;font-size:12px;font-weight:bold;">[封号: ${c.customTitle}]</span>` : ''}
-                        </td>
-                        <td>${c.title}</td>
-                        <td>${c.enterYear}年${c.enterMonth}月</td>
-                        <td>${duration.text}</td>
-                        <td>${c.lianShiCount} 次</td>
-                        <td>
-                            <textarea class="notes-textarea" oninput="autoExpandTextarea(this)" 
-                                onchange="updateConcubine(${c.id}, {notes: this.value})">${safeNotes}</textarea>
-                        </td>
-                        <td><button class="btn btn-sm btn-warning" onclick="handleDeceased(${c.id}, false)">↩ 恢复</button></td>
-                    `;
-                    deceasedTbody.appendChild(tr);
-                    
-                    // 调整弹性输入框高度
-                    const ta = tr.querySelector('.notes-textarea');
-                    if (ta) autoExpandTextarea(ta);
-                    return;
-                }
 
                 const tr = document.createElement('tr');
                 const titleOptions = titlesOrder.map(t => {
@@ -316,17 +254,12 @@
 
                 const birthButtons = c.isPregnant
                     ? `<button class="btn btn-sm btn-success"
-                            onclick="handleSon(${c.id}, '${c.title}', '${(c.customTitle || '').replace(/'/g, "\\'")}', latestConcubines)">
+                            onclick="handleSon(${c.id}, '${c.title}', '', latestConcubines)">
                             👶 诞下皇子
                        </button>
                        <button class="btn btn-sm btn-pink" onclick="handleDaughter(${c.id})">
                             👧 诞下女子
                        </button>`
-                    : '';
-
-                const customTitleBox = c.customTitle
-                    ? `<input type="text" value="${c.customTitle}" style="width:120px;"
-                         onchange="updateConcubine(${c.id}, {customTitle: this.value})">`
                     : '';
 
                 tr.innerHTML = `
@@ -335,7 +268,6 @@
                     </td>
                     <td>
                         <div style="display:flex;align-items:center;gap:4px;">
-                            ${c.customTitle ? `<span style="color:#e67e22;font-weight:bold;font-size:15px;">${c.customTitle}</span>` : ''}
                             <select onchange="updateConcubine(${c.id}, {title: this.value})">${titleOptions}</select>
                         </div>
                     </td>
@@ -355,15 +287,13 @@
                             <div class="button-toggle-group">
                                 ${pregnancyBtn}
                                 ${birthButtons}
-                                <button class="btn btn-sm btn-grey" onclick="handleDeceased(${c.id}, true)">💀 已故</button>
+                                <button class="btn btn-sm btn-danger" onclick="handleDelete(${c.id})">🗑️ 删除</button>
                             </div>
-                            ${customTitleBox}
                         </div>
                     </td>
                 `;
                 tbody.appendChild(tr);
                 
-                // 确保挂载后自适应文本内容
                 const ta = tr.querySelector('.notes-textarea');
                 if (ta) autoExpandTextarea(ta);
             });
