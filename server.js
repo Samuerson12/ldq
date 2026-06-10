@@ -141,7 +141,6 @@ app.post('/api/concubine/update', async (req, res) => {
     res.json(updated);
 });
 
-// Endpoint to delete a character permanently
 app.post('/api/concubine/delete', async (req, res) => {
     const password = req.headers['x-password'];
     if (!VALID_PASSWORDS.includes(password)) return res.status(401).json({ error: 'Unauthorized' });

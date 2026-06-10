@@ -37,9 +37,9 @@
         .btn-pink:hover { background: #c2186e; }
         .inputs-group { display: flex; flex-direction: column; gap: 8px; }
         .button-toggle-group { display: flex; gap: 8px; flex-wrap: nowrap; align-items: center; }
-        .action-column-cell { min-width: 280px; width: max-content; }
+        .action-column-cell { min-width: 320px; width: max-content; }
         select, input[type="text"] { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
-        .notes-textarea { width: 100%; min-width: 180px; min-height: 34px; max-height: 200px; padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; font-family: inherit; resize: vertical; box-sizing: border-box; overflow-y: hidden; }
+        .notes-textarea { width: 100%; min-width: 180px; min-height: 34px; height: 34px; max-height: 200px; padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; font-family: inherit; resize: vertical; box-sizing: border-box; overflow-y: hidden; transition: height 0.1s ease; }
         .notes-textarea:focus { border-color: #3498db; outline: none; }
     </style>
 </head>
@@ -84,7 +84,7 @@
                     <th>入宫时长</th>
                     <th>侍寝次数</th>
                     <th>备注</th>
-                    <th>操作</th>
+                    <th>操作 / 状态 / 封号</th>
                 </tr>
             </thead>
             <tbody id="concubine-table-body"></tbody>
@@ -171,8 +171,10 @@
         }
 
         function autoExpandTextarea(textarea) {
-            textarea.style.height = 'auto';
-            textarea.style.height = textarea.scrollHeight + 'px';
+            textarea.style.height = '34px'; // Reset to initial small height
+            if (textarea.scrollHeight > 34) {
+                textarea.style.height = textarea.scrollHeight + 'px'; // Expand if content overflows
+            }
         }
 
         async function handleLianShi(id, currentCount, delta) {
@@ -242,6 +244,7 @@
             concubines.forEach(c => {
                 const duration = calculateDuration(c.enterYear, c.enterMonth);
                 const safeNotes = c.notes || "";
+                const safeCustomTitle = c.customTitle || "";
 
                 const tr = document.createElement('tr');
                 const titleOptions = titlesOrder.map(t => {
@@ -263,12 +266,17 @@
                        </button>`
                     : '';
 
+                // The Custom Title input box is now added below by default
+                const customTitleBox = `<input type="text" value="${safeCustomTitle}" placeholder="赐予封号" style="width:140px; font-size:13px; padding:6px;"
+                     onchange="updateConcubine(${c.id}, {customTitle: this.value})">`;
+
                 tr.innerHTML = `
                     <td>
                         <strong style="font-size:16px;">${c.name}</strong>
                     </td>
                     <td>
                         <div style="display:flex;align-items:center;gap:4px;">
+                            ${c.customTitle ? `<span style="color:#e67e22;font-weight:bold;font-size:15px;white-space:nowrap;">${c.customTitle}</span>` : ''}
                             <select onchange="updateConcubine(${c.id}, {title: this.value})">${titleOptions}</select>
                         </div>
                     </td>
@@ -290,6 +298,7 @@
                                 ${birthButtons}
                                 <button class="btn btn-sm btn-danger" style="white-space:nowrap;" onclick="handleDelete(${c.id})">🗑️ 删除</button>
                             </div>
+                            ${customTitleBox}
                         </div>
                     </td>
                 `;
