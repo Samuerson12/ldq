@@ -1,208 +1,174 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <title>后宫妃子详情系统</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; background: #f5f6fa; color: #333; }
-        .login-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 999; }
-        .login-box { background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.2); text-align: center; min-width: 300px; }
-        .login-box h2 { margin: 0 0 8px; color: #2c3e50; font-size: 22px; }
-        .login-box p { color: #7f8c8d; margin: 0 0 24px; font-size: 14px; }
-        .login-box input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 18px; text-align: center; letter-spacing: 6px; box-sizing: border-box; margin-bottom: 16px; }
-        .login-box button { width: 100%; padding: 12px; background: #3498db; color: white; border: none; border-radius: 6px; font-size: 15px; font-weight: 600; cursor: pointer; }
-        .login-box button:hover { background: #2980b9; }
-        .login-error { color: #e74c3c; font-size: 13px; margin-top: 10px; display: none; }
+<meta charset="UTF-8">
+<title>后宫妃子详情系统</title>
 
-        .notice {
-            background: #fff3cd;
-            border-left: 5px solid #ffc107;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 4px;
-            font-size: 14px;
-            line-height: 1.6;
-        }
+<style>
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin:0;
+    padding:20px;
+    background:#f5f6fa;
+    color:#333;
+}
 
-        .header-section {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 20px;
-            background: #fff;
-            padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
+.login-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.7);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
 
-        h1 { margin: 0; font-size: 24px; color: #2c3e50; }
+.login-box{
+    background:#fff;
+    padding:40px;
+    border-radius:12px;
+    min-width:300px;
+    text-align:center;
+}
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: #fff;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
+table{
+    width:100%;
+    border-collapse:collapse;
+    background:#fff;
+}
 
-        th, td {
-            padding: 14px 16px;
-            text-align: left;
-            border-bottom: 1px solid #eeeeee;
-            vertical-align: top;
-        }
+th,td{
+    padding:12px;
+    border-bottom:1px solid #eee;
+    vertical-align:top;
+}
 
-        th {
-            background: #34495e;
-            color: #fff;
-            font-weight: 600;
-        }
+th{background:#34495e;color:#fff;}
 
-        tr:hover { background: #f9f9f9; }
+.btn{
+    padding:6px 10px;
+    border:none;
+    cursor:pointer;
+    border-radius:4px;
+    color:#fff;
+}
 
-        .btn {
-            padding: 8px 16px;
-            cursor: pointer;
-            background: #3498db;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-weight: 500;
-        }
+.btn-sm{font-size:12px;}
 
-        .btn-sm {
-            padding: 4px 10px;
-            font-size: 13px;
-            margin: 0 2px;
-        }
+.btn-danger{background:#e74c3c;}
+.btn-success{background:#2ecc71;}
+.btn-pink{background:#e91e8c;}
+.btn-grey{background:#95a5a6;}
 
-        .btn-danger { background: #e74c3c; }
-        .btn-success { background: #2ecc71; }
-        .btn-pink { background: #e91e8c; }
-        .btn-grey { background: #95a5a6; }
+textarea{
+    width:160px;
+    min-height:40px;
+    resize:none;
+    overflow:hidden;
+}
+</style>
 
-        .inputs-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .button-toggle-group {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        select, input[type="text"] {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        textarea {
-            width: 160px;
-            min-height: 40px;
-            resize: none;
-            overflow: hidden;
-        }
-    </style>
 </head>
 
 <body>
 
 <div class="login-overlay" id="login-overlay">
     <div class="login-box">
-        <h2>🏯 后宫管理系统</h2>
-        <p>请输入您的专属密码</p>
-        <input type="password" id="login-input"
-            onkeydown="if(event.key==='Enter') doLogin()">
-        <button onclick="doLogin()">进入</button>
-        <div class="login-error" id="login-error">密码错误，请重试</div>
+        <h2>后宫系统登录</h2>
+        <input type="password" id="pw">
+        <button onclick="login()">进入</button>
     </div>
 </div>
 
-<div id="main-content" style="display:none;">
+<div id="main" style="display:none;">
 
-    <div class="notice">
-        <strong>注意（晋升规则）：</strong><br>
-        1. 侍寝每满 20 次晋升一级。<br>
-        2. 嫔及以上入宫时间每满 5 年进一次位份；贵人及以下每满入宫时间 7 年晋一个位份。<br>
-        3. 贵人及以下怀孕升一个位份，生皇子再升一阶并赐封号。<br>
-        4. 嫔及以上怀孕不升位份，生皇子才升一阶并赐封号。<br>
-        5. 位份限制规则保持不变。
-    </div>
+<table>
+<thead>
+<tr>
+    <th>名字</th>
+    <th>位份</th>
+    <th>时间</th>
+    <th>操作</th>
+    <th>备注</th>
+</tr>
+</thead>
 
-    <div class="header-section">
-        <h1 id="time-display">0年0月</h1>
-        <button class="btn btn-success" style="margin-left:auto;" onclick="window.location.href='form.html'">
-            新增妃子
-        </button>
-    </div>
-
-    <table>
-        <thead>
-        <tr>
-            <th>名字</th>
-            <th>位份</th>
-            <th>入宫时间</th>
-            <th>侍寝次数</th>
-            <th>操作</th>
-            <th>备注</th>
-        </tr>
-        </thead>
-
-        <tbody id="concubine-table-body"></tbody>
-    </table>
+<tbody id="tb"></tbody>
+</table>
 
 </div>
 
 <script>
-const titlesOrder = ["官女子","答应","常在","贵人","嫔","贵嫔","妃","贵妃","皇贵妃","皇后"];
 
-let sessionPassword='';
-let currentYear=1;
-let currentMonth=1;
+let pw = '';
 
-function apiHeaders(){
+function headers(){
     return {
         'Content-Type':'application/json',
-        'x-password':sessionPassword
+        'x-password':pw
     };
 }
 
-async function doLogin(){
-    const pw=document.getElementById('login-input').value;
+async function login(){
+    const v = document.getElementById('pw').value;
 
-    const res=await fetch('/api/login',{
+    const res = await fetch('/api/login',{
         method:'POST',
         headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({password:pw})
+        body:JSON.stringify({password:v})
     });
 
-    const data=await res.json();
+    const d = await res.json();
 
-    if(data.success){
-        sessionPassword=pw;
-        sessionStorage.setItem('pw',pw);
+    if(d.success){
+        pw = v;
         document.getElementById('login-overlay').style.display='none';
-        document.getElementById('main-content').style.display='block';
-        loadState();
+        document.getElementById('main').style.display='block';
+        load();
     }
 }
 
-async function loadState(){
-    const res=await fetch('/api/state',{headers:apiHeaders()});
-    const data=await res.json();
+async function load(){
+    const res = await fetch('/api/state',{headers:headers()});
+    const data = await res.json();
+    render(data.concubines);
+}
 
-    currentYear=data.currentYear;
-    currentMonth=data.currentMonth;
+async function update(id,fields){
+    const res = await fetch('/api/concubine/update',{
+        method:'POST',
+        headers:headers(),
+        body:JSON.stringify({id,...fields})
+    });
 
-    document.getElementById('time-display').innerText=
-        `${currentYear}年${currentMonth}月`;
+    const d = await res.json();
+    render(d.concubines);
+}
 
-    renderTable(data.concubines);
+async function handleBirth(id,type){
+
+    const fields = {
+        isPregnant:false
+    };
+
+    if(type === 'son'){
+        fields.hasSon = true;
+    }
+
+    await update(id,fields);
+}
+
+async function handleDelete(id,name){
+
+    if(!confirm(`确定删除【${name}】？`)) return;
+
+    const res = await fetch('/api/concubine/delete',{
+        method:'POST',
+        headers:headers(),
+        body:JSON.stringify({id})
+    });
+
+    const d = await res.json();
+    render(d.concubines);
 }
 
 function autoResize(el){
@@ -210,125 +176,70 @@ function autoResize(el){
     el.style.height=el.scrollHeight+'px';
 }
 
-async function updateConcubine(id,fields){
-    const res=await fetch('/api/concubine/update',{
-        method:'POST',
-        headers:apiHeaders(),
-        body:JSON.stringify({id,...fields})
-    });
+function render(list){
 
-    const data=await res.json();
-    renderTable(data.concubines);
-}
+    const tb = document.getElementById('tb');
+    tb.innerHTML='';
 
-async function handleDelete(id,name){
-    if(!confirm(`确定删除【${name}】？此操作不可恢复！`)) return;
+    list.forEach(c=>{
 
-    const res=await fetch('/api/concubine/delete',{
-        method:'POST',
-        headers:apiHeaders(),
-        body:JSON.stringify({id})
-    });
-
-    const data=await res.json();
-    renderTable(data.concubines);
-}
-
-function renderTable(concubines){
-
-    const tbody=document.getElementById('concubine-table-body');
-    tbody.innerHTML='';
-
-    concubines.forEach(c=>{
-
-        const tr=document.createElement('tr');
-
-        const titleOptions=titlesOrder.map(t=>
-            `<option value="${t}" ${c.title===t?'selected':''}>${t}</option>`
-        ).join('');
-
-        const customTitleBox=`
-            <input type="text"
-                value="${c.customTitle||''}"
-                style="width:120px;"
-                placeholder="封号"
-                onchange="updateConcubine(${c.id},{customTitle:this.value})">
-        `;
+        const tr = document.createElement('tr');
 
         tr.innerHTML=`
-            <td>
-                <b>${c.name}</b>
-                ${c.customTitle?`<br><span style="color:#e67e22;font-size:13px;">[${c.customTitle}]</span>`:''}
-            </td>
+            <td><b>${c.name}</b></td>
 
             <td>
-                <select onchange="updateConcubine(${c.id},{title:this.value})">
-                    ${titleOptions}
+                <select onchange="update(${c.id},{title:this.value})">
+                    <option ${c.title==='贵人'?'selected':''}>贵人</option>
+                    <option ${c.title==='嫔'?'selected':''}>嫔</option>
+                    <option ${c.title==='妃'?'selected':''}>妃</option>
                 </select>
             </td>
 
             <td>${c.enterYear}年${c.enterMonth}月</td>
 
             <td>
-                <b>${c.lianShiCount||0}</b>
-                <button class="btn btn-sm"
-                    onclick="updateConcubine(${c.id},{lianShiCount:(c.lianShiCount||0)+1})">+</button>
-            </td>
 
-            <td>
-                <div class="inputs-group">
+                <div>
 
-                    <div class="button-toggle-group">
-
+                    ${!c.isPregnant ? `
                         <button class="btn btn-sm"
-                            onclick="handlePregnancy(${c.id}, '${c.title}', latestConcubines)">
+                            onclick="update(${c.id},{isPregnant:true})">
                             怀孕
                         </button>
-
-                        ${c.isPregnant ? `
-                            <button class="btn btn-sm btn-success"
-                                onclick="handleSon(${c.id}, '${c.title}', '${(c.customTitle||'').replace(/'/g,"\\'")}', latestConcubines)">
-                                👶 诞下皇子
-                            </button>
-
-                            <button class="btn btn-sm btn-pink"
-                                onclick="handleDaughter(${c.id})">
-                                👧 诞下女子
-                            </button>
-                        ` : ''}
-
-                        <button class="btn btn-sm btn-danger"
-                            onclick="handleDelete(${c.id}, '${c.name.replace(/'/g,"\\'")}')">
-                            删除
+                    ` : `
+                        <button class="btn btn-sm btn-success"
+                            onclick="handleBirth(${c.id},'son')">
+                            👶 皇子
                         </button>
 
-                    </div>
+                        <button class="btn btn-sm btn-pink"
+                            onclick="handleBirth(${c.id},'daughter')">
+                            👧 女子
+                        </button>
+                    `}
 
-                    ${customTitleBox}
+                    <button class="btn btn-sm btn-danger"
+                        onclick="handleDelete(${c.id},'${c.name}')">
+                        删除
+                    </button>
+
                 </div>
+
             </td>
 
             <td>
                 <textarea
                     oninput="autoResize(this)"
-                    onchange="updateConcubine(${c.id},{note:this.value})"
+                    onchange="update(${c.id},{note:this.value})"
                 >${c.note||''}</textarea>
             </td>
         `;
 
-        tbody.appendChild(tr);
+        tb.appendChild(tr);
     });
 }
 
-window.onload=()=>{
-    const saved=sessionStorage.getItem('pw');
-    if(saved){
-        sessionPassword=saved;
-        document.getElementById('login-overlay').style.display='none';
-        document.getElementById('main-content').style.display='block';
-        loadState();
-    }
-};
 </script>
 
 </body>
