@@ -39,7 +39,7 @@
         .button-toggle-group { display: flex; gap: 8px; flex-wrap: nowrap; align-items: center; }
         .action-column-cell { min-width: 320px; width: max-content; }
         select, input[type="text"] { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
-        .notes-textarea { min-width: 50px; min-height: 34px; height: 34px; max-height: 200px; padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; font-family: inherit; resize: vertical; box-sizing: border-box; overflow-y: hidden; transition: height 0.1s ease; }
+        .notes-textarea { min-width: 60px; min-height: 24px; height: 24px; max-height: 200px; padding: 4px 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; font-family: inherit; resize: vertical; box-sizing: border-box; overflow-y: hidden; transition: height 0.1s ease; }
         .notes-textarea:focus { border-color: #3498db; outline: none; }
     </style>
 </head>
@@ -171,9 +171,9 @@
         }
 
         function autoExpandTextarea(textarea) {
-            textarea.style.height = '34px'; // Reset to initial small height
-            if (textarea.scrollHeight > 34) {
-                textarea.style.height = textarea.scrollHeight + 'px'; // Expand if content overflows
+            textarea.style.height = '24px'; 
+            if (textarea.scrollHeight > 24) {
+                textarea.style.height = textarea.scrollHeight + 'px'; 
             }
         }
 
@@ -266,7 +266,6 @@
                        </button>`
                     : '';
 
-                // The Custom Title input box is now added below by default
                 const customTitleBox = `<input type="text" value="${safeCustomTitle}" placeholder="赐予封号" style="width:140px; font-size:13px; padding:6px;"
                      onchange="updateConcubine(${c.id}, {customTitle: this.value})">`;
 
