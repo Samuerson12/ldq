@@ -407,10 +407,13 @@
                        </button>`
                     : '';
 
-                const customTitleBox = c.customTitle
-                    ? `<input type="text" value="${c.customTitle}" style="width:120px;"
-                         onchange="updateConcubine(${c.id}, {customTitle: this.value})">`
-                    : '';
+                const customTitleBox = `
+                    <input type="text"
+                        value="${c.customTitle || ''}"
+                        style="width:120px;"
+                        placeholder="封号"
+                        onchange="updateConcubine(${c.id}, {customTitle: this.value})">
+                `;
 
                 tr.innerHTML = `
                     <td>
@@ -418,7 +421,6 @@
                     </td>
                     <td>
                         <div style="display:flex;align-items:center;gap:4px;">
-                            ${c.customTitle ? `<span style="color:#e67e22;font-weight:bold;font-size:15px;">${c.customTitle}</span>` : ''}
                             <select onchange="updateConcubine(${c.id}, {title: this.value})">${titleOptions}</select>
                         </div>
                     </td>
