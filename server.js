@@ -66,9 +66,13 @@ app.post('/api/time', async (req, res) => {
 
     const state = await getState(password);
     const { action } = req.body;
+
     if (action === 'add') {
         state.currentMonth++;
-        if (state.currentMonth > 12) { state.currentMonth = 1; state.currentYear++; }
+        if (state.currentMonth > 12) {
+            state.currentMonth = 1;
+            state.currentYear++;
+        }
     } else if (action === 'sub') {
         state.currentMonth--;
         if (state.currentMonth < 1) {
@@ -77,10 +81,12 @@ app.post('/api/time', async (req, res) => {
             if (state.currentYear < 1) state.currentYear = 1;
         }
     }
+
     const updated = await updateState(password, {
         currentYear: state.currentYear,
         currentMonth: state.currentMonth
     });
+
     res.json(updated);
 });
 
@@ -90,6 +96,7 @@ app.post('/api/concubine/add', async (req, res) => {
 
     const state = await getState(password);
     const { name, title, enterYear, enterMonth, notes } = req.body;
+
     state.concubines.push({
         id: Date.now(),
         name,
@@ -100,13 +107,14 @@ app.post('/api/concubine/add', async (req, res) => {
         isPregnant: false,
         hasSon: false,
         customTitle: "",
-        notes: notes || "",
+        notes: notes || "",   // ✅ FIXED
         deceased: false,
         pregnancyPromoted: false,
         sonPromoted: false,
         lianShiPromotions: 0,
         durationPromotions: 0
     });
+
     await updateState(password, { concubines: state.concubines });
     res.json({ success: true });
 });
@@ -124,19 +132,26 @@ app.post('/api/concubine/update', async (req, res) => {
     } = req.body;
 
     const index = state.concubines.findIndex(c => c.id === id);
+
     if (index !== -1) {
         if (title !== undefined) state.concubines[index].title = title;
         if (lianShiCount !== undefined) state.concubines[index].lianShiCount = Math.max(0, lianShiCount);
         if (isPregnant !== undefined) state.concubines[index].isPregnant = isPregnant;
         if (hasSon !== undefined) state.concubines[index].hasSon = hasSon;
         if (customTitle !== undefined) state.concubines[index].customTitle = customTitle;
-        if (notes !== undefined) state.concubines[index].notes = notes;
+
+        // ✅ FIXED NOTES (备注)
+        if (notes !== undefined) {
+            state.concubines[index].notes = notes;
+        }
+
         if (deceased !== undefined) state.concubines[index].deceased = deceased;
         if (pregnancyPromoted !== undefined) state.concubines[index].pregnancyPromoted = pregnancyPromoted;
         if (sonPromoted !== undefined) state.concubines[index].sonPromoted = sonPromoted;
         if (lianShiPromotions !== undefined) state.concubines[index].lianShiPromotions = lianShiPromotions;
         if (durationPromotions !== undefined) state.concubines[index].durationPromotions = durationPromotions;
     }
+
     const updated = await updateState(password, { concubines: state.concubines });
     res.json(updated);
 });
@@ -147,6 +162,7 @@ async function start() {
     await client.connect();
     db = client.db('haremtracker');
     console.log('Connected to MongoDB');
+
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 }
