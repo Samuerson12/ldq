@@ -109,7 +109,11 @@
     </div>
 
     <script>
+<<<<<<< HEAD
         const titlesOrder = ["官女子", "答应", "常在", "贵人", "嫔", "妃", "贵妃", "皇贵妃", "皇后"];
+=======
+        const titlesOrder = ["官女子", "答应", "常在", "贵人", "嫔", "贵嫔","妃", "贵妃", "皇贵妃", "皇后"];
+>>>>>>> 57186b6 (Initial commit)
         const queenIdx = titlesOrder.indexOf("皇后");
         const guirenIdx = titlesOrder.indexOf("贵人");
         const pinIdx = titlesOrder.indexOf("嫔");
@@ -415,10 +419,19 @@
                 tr.innerHTML = `
                     <td>
                         <strong style="font-size:16px;">${c.name}</strong>
+<<<<<<< HEAD
                         ${c.customTitle ? `<br><span style="color:#e67e22;font-size:12px;font-weight:bold;">[封号: ${c.customTitle}]</span>` : ''}
                     </td>
                     <td>
                         <select onchange="updateConcubine(${c.id}, {title: this.value})">${titleOptions}</select>
+=======
+                    </td>
+                    <td>
+                        <div style="display:flex;align-items:center;gap:4px;">
+                            ${c.customTitle ? `<span style="color:#e67e22;font-weight:bold;font-size:15px;">${c.customTitle}</span>` : ''}
+                            <select onchange="updateConcubine(${c.id}, {title: this.value})">${titleOptions}</select>
+                        </div>
+>>>>>>> 57186b6 (Initial commit)
                     </td>
                     <td>${c.enterYear}年${c.enterMonth}月</td>
                     <td>${duration.text}</td>
