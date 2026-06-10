@@ -7,7 +7,7 @@
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 10px; background: #f5f6fa; color: #333; }
         
-        @media (min-width: 600px) {
+        @media (min-width: 768px) {
             body { padding: 20px; }
         }
 
@@ -25,32 +25,22 @@
         .header-section { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; background: #fff; padding: 15px 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         h1 { margin: 0; font-size: 20px; color: #2c3e50; }
         
-        @media (min-width: 600px) {
+        @media (min-width: 768px) {
             h1 { font-size: 24px; }
             .header-section { gap: 20px; }
         }
 
-        /* Responsive wrapper container for mobile horizontal scrolling */
-        .table-responsive-wrapper {
+        .table-container {
             width: 100%;
-            overflow-x: auto;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             margin-bottom: 20px;
-            -webkit-overflow-scrolling: touch;
         }
 
-        /* table-layout: auto ensures columns scale dynamically to content size */
         table { 
             width: 100%; 
-            max-width: 100%;
-            table-layout: auto; 
             border-collapse: collapse; 
         }
         
         th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #eeeeee; vertical-align: middle; }
-        th { background: #34495e; color: #fff; font-weight: 600; font-size: 14px; white-space: nowrap; }
         tr:hover { background: #f9f9f9; }
         
         .btn { padding: 6px 12px; cursor: pointer; background: #3498db; color: white; border: none; border-radius: 4px; font-weight: 500; transition: background 0.2s; font-size: 13px; }
@@ -65,13 +55,89 @@
         .btn-active { background: #2c3e50; box-shadow: inset 0 3px 5px rgba(0,0,0,0.2); }
         
         .inputs-group { display: flex; flex-direction: column; gap: 6px; width: 100%; }
-        .button-toggle-group { display: flex; gap: 6px; flex-wrap: nowrap; align-items: center; width: max-content; }
+        .button-toggle-group { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; width: 100%; }
         
-        select, input[type="text"] { padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; max-width: 100%; box-sizing: border-box; }
+        select, input[type="text"] { padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; width: 100%; max-width: 100%; box-sizing: border-box; }
         
-        /* Elastic textbox adjusts fluidly with column dimensions */
-        .notes-textarea { width: 100%; min-width: 100px; min-height: 24px; height: 24px; max-height: 150px; padding: 4px 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; font-family: inherit; resize: vertical; box-sizing: border-box; overflow-y: hidden; transition: height 0.1s ease; }
+        .notes-textarea { width: 100%; min-height: 24px; height: 24px; max-height: 150px; padding: 4px 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; font-family: inherit; resize: vertical; box-sizing: border-box; overflow-y: hidden; transition: height 0.1s ease; }
         .notes-textarea:focus { border-color: #3498db; outline: none; }
+
+        /* ==========================================================================
+           CRITICAL MOBILE BREAKPOINT - Converts row lines into self-contained cards
+           ========================================================================== */
+        @media screen and (max-width: 767px) {
+            /* Hide traditional table headers entirely */
+            table thead {
+                display: none;
+            }
+            
+            /* Turn table structure components into blocks */
+            table, table tbody, table tr, table td {
+                display: block;
+                width: 100%;
+                box-sizing: border-box;
+            }
+            
+            /* Format row element as an isolated floating layout card */
+            table tr {
+                background: #ffffff;
+                margin-bottom: 15px;
+                border-radius: 8px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+                padding: 8px 4px;
+                border: 1px solid #e2e8f0;
+            }
+            
+            table tr:hover {
+                background: #ffffff;
+            }
+            
+            /* Reformat cells to wrap vertically with label matching tags */
+            table td {
+                text-align: right;
+                padding: 8px 12px;
+                border-bottom: 1px solid #f1f5f9;
+                position: relative;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            
+            table td:last-child {
+                border-bottom: none;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            /* Inject text column labels dynamically using custom HTML attributes */
+            table td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: #4a5568;
+                font-size: 13px;
+                text-align: left;
+                padding-right: 10px;
+            }
+            
+            table td:last-child::before {
+                margin-bottom: 2px;
+            }
+
+            .button-toggle-group {
+                flex-wrap: wrap; /* Let button sets cascade safely on ultra-narrow viewports */
+            }
+            
+            select, input[type="text"], .notes-textarea {
+                max-width: 180px; /* Restrict width elements on mobile labels alignment */
+            }
+        }
+
+        /* Desktop specific visual headers structure preservation layout line */
+        @media screen and (min-width: 768px) {
+            th { background: #34495e; color: #fff; font-weight: 600; font-size: 14px; white-space: nowrap; }
+            table { table-layout: auto; }
+        }
     </style>
 </head>
 <body>
@@ -104,7 +170,7 @@
             <button class="btn btn-success" style="margin-left: auto;" onclick="window.location.href='form.html'">新增妃子</button>
         </div>
 
-        <div class="table-responsive-wrapper">
+        <div class="table-container">
             <table>
                 <thead>
                     <tr>
@@ -296,30 +362,31 @@
                        </button>`
                     : '';
 
-                const customTitleBox = `<input type="text" value="${safeCustomTitle}" placeholder="赐予封号" style="width:100%; max-width:140px; font-size:13px; padding:6px;"
+                const customTitleBox = `<input type="text" value="${safeCustomTitle}" placeholder="赐予封号" style="font-size:13px; padding:6px;"
                      onchange="updateConcubine(${c.id}, {customTitle: this.value})">`;
 
+                // Added 'data-label' parameters onto columns for dynamic mobile label insertions
                 tr.innerHTML = `
-                    <td>
+                    <td data-label="名字">
                         <strong style="font-size:15px; white-space:nowrap;">${c.name}</strong>
                     </td>
-                    <td>
+                    <td data-label="位份">
                         <div style="display:flex;align-items:center;">
                             <select onchange="updateConcubine(${c.id}, {title: this.value})">${titleOptions}</select>
                         </div>
                     </td>
-                    <td style="white-space:nowrap;">${c.enterYear}年${c.enterMonth}月</td>
-                    <td style="white-space:nowrap;">${duration.text}</td>
-                    <td style="white-space:nowrap;">
+                    <td data-label="入宫时间" style="white-space:nowrap;">${c.enterYear}年${c.enterMonth}月</td>
+                    <td data-label="入宫时长" style="white-space:nowrap;">${duration.text}</td>
+                    <td data-label="侍寝次数" style="white-space:nowrap;">
                         <b style="font-size:14px;margin-right:4px;">${c.lianShiCount} 次</b>
                         <button class="btn btn-sm" onclick="handleLianShi(${c.id}, ${c.lianShiCount}, 1)">+</button>
                         <button class="btn btn-sm btn-danger" onclick="handleLianShi(${c.id}, ${c.lianShiCount}, -1)">-</button>
                     </td>
-                    <td>
+                    <td data-label="备注">
                         <textarea class="notes-textarea" oninput="autoExpandTextarea(this)" 
                             onchange="updateConcubine(${c.id}, {notes: this.value})">${safeNotes}</textarea>
                     </td>
-                    <td>
+                    <td data-label="操作 / 状态 / 封号">
                         <div class="inputs-group">
                             <div class="button-toggle-group">
                                 ${pregnancyBtn}
