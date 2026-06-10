@@ -58,7 +58,8 @@
 
     <div class="notice">
         <strong>注意（晋升规则）：</strong><br>
-        侍寝、怀孕、晋升系统保持不变。
+        1. 侍寝每满 20 次晋升一级。<br>
+        2. 贵人及以下怀孕升位份...（保持原样）<br>
     </div>
 
     <div class="header-section">
@@ -75,10 +76,14 @@
             <th>入宫时间</th>
             <th>入宫时长</th>
             <th>侍寝次数</th>
+
+            <!-- ✅ ONLY ADD -->
             <th>备注</th>
-            <th>操作</th>
+
+            <th>操作 / 状态 / 封号</th>
         </tr>
         </thead>
+
         <tbody id="concubine-table-body"></tbody>
     </table>
 
@@ -148,15 +153,18 @@ function renderTable(concubines) {
             </td>
 
             <td>${c.enterYear}年${c.enterMonth}月</td>
+
             <td>${Math.max(0, (c.currentYear || 1) - c.enterYear)}年</td>
+
             <td>${c.lianShiCount}</td>
 
-            <!-- ✅ FIXED NOTES -->
+            <!-- ✅ FIXED: 备注 -->
             <td>
                 <input type="text"
                     value="${c.notes || ''}"
                     placeholder="备注"
-                    oninput="updateConcubine(${c.id}, { notes: this.value })">
+                    oninput="updateConcubine(${c.id}, { notes: this.value })"
+                    style="width:120px;">
             </td>
 
             <td>
